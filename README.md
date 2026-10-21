@@ -8,6 +8,7 @@ A responsive web app for estimating delivery duration at dispatch. The frontend 
 
 ```powershell
 python -m pip install -r requirements.txt
+$env:ENABLE_TRAINING = "true"
 python app.py
 ```
 
@@ -19,7 +20,11 @@ The package becomes downloadable in the interface after real-data training. You 
 
 GitHub stores the source; it does not run this Flask app. After pushing this repository, connect it to Render as a **Web Service** (or deploy the included `render.yaml` as a Blueprint). Use Python 3, build command `pip install -r requirements.txt`, start command `gunicorn app:app --workers 1 --threads 4 --timeout 300 --bind 0.0.0.0:$PORT`, and health-check path `/api/status`. The service loads the trained model from `deliverables/eta_model_package.zip`; the source CSV is intentionally excluded.
 
-The frontend and Flask API are served from the same origin. The included Render configuration sets `ENABLE_TRAINING=false`, so the public demo only serves predictions from the packaged model and rejects CSV training uploads. For local coursework, training uploads remain enabled by default; set `ENABLE_TRAINING=false` if you expose another public instance. Do not put Kaggle credentials in the repository. Verify the exact Kaggle listing's license before uploading or redistributing its data.
+The frontend and Flask API are served from the same origin. The included Render configuration sets `ENABLE_TRAINING=false`, so the public demo only serves predictions from the packaged model and rejects CSV training uploads. For local coursework, set `ENABLE_TRAINING=true` before starting the app to use CSV training uploads. Do not put Kaggle credentials in the repository. Verify the exact Kaggle listing's license before uploading or redistributing its data.
+
+## Deploy on Vercel
+
+The project includes `vercel.json`, which explicitly includes the trained model ZIP in the Flask function and excludes the dataset and presentation build output. Frontend assets are mirrored in `public/` for Vercel's static CDN; Flask also serves the same assets when running locally. Import this GitHub repository into Vercel and deploy from the project root. The app defaults to disabling CSV training when it detects Vercel. Keep `ENABLE_TRAINING` unset or set it to `false` in Vercel; Vercel Functions have a 4.5 MB request/response payload limit, so the local CSV upload workflow is not suitable for Vercel. Predictions load the trained artifact from `deliverables/eta_model_package.zip`.
 
 ## Project files
 

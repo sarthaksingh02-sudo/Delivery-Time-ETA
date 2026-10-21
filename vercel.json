@@ -1,0 +1,9 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "functions": {
+    "app.py": {
+      "includeFiles": "deliverables/eta_model_package.zip",
+      "excludeFiles": "{data/**,presentation_build/**,deliverables/*.pptx}"
+    }
+  }
+}

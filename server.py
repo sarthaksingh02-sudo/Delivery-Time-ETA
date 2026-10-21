@@ -18,9 +18,10 @@ FRONTEND = ROOT / "frontend"
 MODEL_PATH = ROOT / "models" / "eta_model.joblib"
 METRICS_PATH = ROOT / "models" / "metrics.json"
 PACKAGE_PATH = Path(os.environ.get("ETA_MODEL_PACKAGE", str(ROOT / "deliverables" / "eta_model_package.zip")))
-app = Flask(__name__, static_folder=str(FRONTEND), static_url_path="/static")
+app = Flask(__name__, static_folder=None)
 app.config["MAX_CONTENT_LENGTH"] = 120 * 1024 * 1024
-TRAINING_ENABLED = os.environ.get("ENABLE_TRAINING", "true").strip().lower() in {"1", "true", "yes"}
+default_training = "false" if os.environ.get("VERCEL") == "1" else "true"
+TRAINING_ENABLED = os.environ.get("ENABLE_TRAINING", default_training).strip().lower() in {"1", "true", "yes"}
 
 if MODEL_PATH.exists():
     model_bundle = joblib.load(MODEL_PATH)
@@ -49,6 +50,14 @@ def current_metrics():
 @app.get("/")
 def index():
     return send_from_directory(FRONTEND, "index.html")
+
+@app.get("/styles.css")
+def styles():
+    return send_from_directory(FRONTEND, "styles.css")
+
+@app.get("/app.js")
+def frontend_script():
+    return send_from_directory(FRONTEND, "app.js")
 
 @app.get("/api/status")
 def status():
