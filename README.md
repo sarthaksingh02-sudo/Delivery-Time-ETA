@@ -19,7 +19,7 @@ The package becomes downloadable in the interface after real-data training. You 
 
 GitHub stores the source; it does not run this Flask app. After pushing this repository, connect it to Render as a **Web Service** (or deploy the included `render.yaml` as a Blueprint). Use Python 3, build command `pip install -r requirements.txt`, start command `gunicorn app:app --workers 1 --threads 4 --timeout 300 --bind 0.0.0.0:$PORT`, and health-check path `/api/status`. The service loads the trained model from `deliverables/eta_model_package.zip`; the source CSV is intentionally excluded.
 
-The frontend and Flask API are served from the same origin. Do not put Kaggle credentials in the repository. Verify the exact Kaggle listing's license before uploading or redistributing its data. The service accepts CSV training uploads up to 120 MB; for a public deployment, restrict access to the training endpoint before using sensitive data.
+The frontend and Flask API are served from the same origin. The included Render configuration sets `ENABLE_TRAINING=false`, so the public demo only serves predictions from the packaged model and rejects CSV training uploads. For local coursework, training uploads remain enabled by default; set `ENABLE_TRAINING=false` if you expose another public instance. Do not put Kaggle credentials in the repository. Verify the exact Kaggle listing's license before uploading or redistributing its data.
 
 ## Project files
 

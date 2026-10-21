@@ -26,8 +26,12 @@ function updateArrival(minutes) {
 function renderStatus(status) {
   currentMode = status.mode;
   const demo = status.mode === 'synthetic_demo';
+  const trainingEnabled = status.training_enabled !== false;
   const active = new Set(status.features || Object.keys(featureControls));
   $('download-package').classList.toggle('hidden', !status.package_ready);
+  $('hosted-download-package').classList.toggle('hidden', !status.package_ready);
+  $('training-controls').classList.toggle('hidden', !trainingEnabled);
+  $('training-disabled').classList.toggle('hidden', trainingEnabled);
   const unavailable = [];
   for (const [feature, [fieldId, label]] of Object.entries(featureControls)) {
     const field = $(fieldId);
@@ -46,8 +50,8 @@ function renderStatus(status) {
 }
 function renderMetrics(report) {
   $('metrics-section').classList.remove('hidden');
-  $('metrics-rows').textContent = `${Number(report.rows_used).toLocaleString()} records · ${Number(report.test_rows).toLocaleString()} held out`;
-  $('metrics-note').textContent = `${report.winner} selected by lowest held-out MAE. ${report.note || ''}`;
+  $('metrics-rows').textContent = `${Number(report.rows_used).toLocaleString()} records · ${Number(report.test_rows).toLocaleString()} comparison rows`;
+  $('metrics-note').textContent = `${report.winner} selected by lowest comparison-split MAE. ${report.note || ''}`;
   $('metrics-body').innerHTML = report.metrics.map(row => `<tr class="${row.Model === report.winner ? 'winner' : ''}"><td>${row.Model}</td><td>${Number(row['CV MAE (min)']).toFixed(1)} min</td><td>${Number(row['MAE (min)']).toFixed(1)} min</td><td>${Number(row['RMSE (min)']).toFixed(1)} min</td><td>${Number(row['MAPE (%)']).toFixed(1)}%</td><td>${Number(row['R²']).toFixed(3)}</td></tr>`).join('');
 }
 async function loadStatus() {

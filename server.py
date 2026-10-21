@@ -20,6 +20,7 @@ METRICS_PATH = ROOT / "models" / "metrics.json"
 PACKAGE_PATH = Path(os.environ.get("ETA_MODEL_PACKAGE", str(ROOT / "deliverables" / "eta_model_package.zip")))
 app = Flask(__name__, static_folder=str(FRONTEND), static_url_path="/static")
 app.config["MAX_CONTENT_LENGTH"] = 120 * 1024 * 1024
+TRAINING_ENABLED = os.environ.get("ENABLE_TRAINING", "true").strip().lower() in {"1", "true", "yes"}
 
 if MODEL_PATH.exists():
     model_bundle = joblib.load(MODEL_PATH)
@@ -57,6 +58,7 @@ def status():
         "training_rows": model_bundle.get("training_rows", 0),
         "metrics": current_metrics() if model_bundle.get("mode") == "real_dataset" else None,
         "package_ready": model_bundle.get("mode") == "real_dataset" and PACKAGE_PATH.is_file(),
+        "training_enabled": TRAINING_ENABLED,
         "features": model_bundle.get("features", FEATURES),
     })
 
@@ -77,6 +79,8 @@ def api_predict():
 @app.post("/api/train")
 def api_train():
     global model_bundle
+    if not TRAINING_ENABLED:
+        return jsonify({"error": "Training uploads are disabled on this hosted demo."}), 403
     uploaded = request.files.get("dataset")
     if not uploaded or not uploaded.filename.lower().endswith(".csv"):
         return jsonify({"error": "Choose a CSV file from the Kaggle dataset."}), 400
