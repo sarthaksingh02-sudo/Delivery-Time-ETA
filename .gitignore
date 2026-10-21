@@ -1,0 +1,13 @@
+__pycache__/
+.codex/
+.venv/
+.streamlit/secrets.toml
+data/*.csv
+presentation_build/
+deliverables/Last_Mile_ETA_Project.pptx
+models/*.joblib
+models/metrics.json
+models/model_comparison.csv
+reports/*.csv
+reports/*.json
+*.pyc

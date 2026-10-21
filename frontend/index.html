@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f5f7f8">
+  <title>Routewise — Delivery ETA</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="/"><span class="brand-mark">r</span><span>routewise<span class="brand-dot">.</span></span></a>
+    <nav><a class="active" href="#predict">ETA prediction</a><a href="#how-it-works">How it works</a><a href="#model">Model</a></nav>
+    <div class="top-status"><span class="status-dot"></span><span id="header-model">Connecting…</span></div>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div class="hero-copy">
+        <div class="eyebrow"><span class="eyebrow-line"></span> LAST-MILE INTELLIGENCE</div>
+        <h1>A better ETA starts<br>at <em>dispatch.</em></h1>
+        <p>Estimate delivery time using the route, conditions, and delivery context available right now.</p>
+        <a class="hero-link" href="#predict">Make a prediction <span>↘</span></a>
+      </div>
+      <div class="hero-art" aria-hidden="true">
+        <div class="route-label label-start">PICKUP <i></i></div><div class="route-path"><span></span><b></b><span></span></div><div class="route-label label-end">DROPOFF <i></i></div>
+        <div class="route-card"><div class="route-card-icon">↗</div><div><small>LIVE ESTIMATE</small><strong>Delivery duration</strong></div><div class="route-card-line"></div><div class="route-card-min">— <small>min</small></div></div>
+        <div class="map-ring ring-one"></div><div class="map-ring ring-two"></div>
+      </div>
+      <div class="hero-index"><span>PROJECT 05</span><span>ML / REGRESSION</span></div>
+    </section>
+
+    <div id="demo-warning" class="notice demo-notice hidden"><span class="notice-icon">i</span><div><strong>Preview model</strong><span>This model uses synthetic training data for the interactive demo. Upload the Kaggle CSV below to train and evaluate on real deliveries.</span></div><button class="notice-close" id="notice-close" aria-label="Dismiss notice">×</button></div>
+    <div id="real-notice" class="notice real-notice hidden"><span class="notice-icon">✓</span><div><strong>Dataset model is ready</strong><span id="real-notice-text">Predictions now use the uploaded delivery dataset.</span></div></div>
+
+    <section class="workspace" id="predict">
+      <div class="section-heading"><div><div class="eyebrow dark"><span class="eyebrow-line"></span> PREDICTION WORKSPACE</div><h2>Set dispatch conditions</h2></div><div class="step-pill"><span>01</span> INPUTS <span class="step-divider">/</span> <span>02</span> ETA</div></div>
+      <div class="workspace-grid">
+        <form class="form-panel" id="prediction-form">
+          <div class="form-top"><div><h3>Delivery details</h3><p>Enter what you know at dispatch</p></div><span class="form-number">01</span></div>
+          <div class="input-grid">
+            <label class="field span-2" id="field-distance"><span>Route distance <small>KM</small></span><div class="input-wrap"><span class="input-prefix">↗</span><input id="distance" type="number" min="0.1" max="100" step="0.1" value="5.2" required><span class="input-suffix">km</span></div></label>
+            <label class="field" id="field-traffic"><span>Traffic level</span><select id="traffic"><option>Low</option><option>Medium</option><option selected>High</option><option>Jam</option></select></label>
+            <label class="field" id="field-weather"><span>Weather</span><select id="weather"><option>Sunny</option><option>Cloudy</option><option selected>Rainy</option><option>Fog</option><option>Stormy</option></select></label>
+            <label class="field" id="field-vehicle"><span>Vehicle</span><select id="vehicle"><option value="motorcycle">Motorcycle</option><option value="scooter">Scooter</option><option value="bicycle">Bicycle</option><option value="scooty">Scooty</option></select></label>
+            <label class="field" id="field-area"><span>Area type</span><select id="area"><option>Urban</option><option>Metropolitan</option><option>Semi-Urban</option><option>Other</option></select></label>
+            <label class="field" id="field-rating"><span>Agent rating <small>OUT OF 5</small></span><div class="input-wrap"><span class="input-prefix star">★</span><input id="rating" type="number" min="1" max="5" step="0.1" value="4.7" required></div></label>
+            <label class="field" id="field-age"><span>Agent age <small>YEARS</small></span><div class="input-wrap"><input id="age" type="number" min="18" max="70" value="29" required><span class="input-suffix">yrs</span></div></label>
+            <label class="field" id="field-deliveries"><span>Other active deliveries</span><select id="deliveries"><option value="0">None</option><option value="1">1 delivery</option><option value="2">2 deliveries</option><option value="3">3 deliveries</option></select></label>
+            <label class="field" id="field-festival"><span>Festival conditions</span><select id="festival"><option>No</option><option>Yes</option></select></label>
+            <label class="field" id="field-hour" style="grid-column:span 2"><span>Dispatch hour</span><div class="range-row"><input id="hour" type="range" min="0" max="23" value="17"><span class="hour-value" id="hour-value">5:00 PM</span></div></label>
+            <label class="field" id="field-category"><span>Order category</span><select id="category"><option>Clothing</option><option>Electronics</option><option>Sports</option><option>Cosmetics</option><option>Toys</option><option>Other</option></select></label>
+          </div>
+          <div id="unsupported-inputs" class="unsupported-inputs hidden"></div>
+          <div class="form-actions"><span class="secure-note"><span>●</span> Prediction uses dispatch-time inputs</span><button class="primary-button" type="submit"><span>Calculate ETA</span><b>↗</b></button></div>
+          <div id="form-error" class="form-error hidden" role="alert"></div>
+        </form>
+
+        <aside class="result-panel" id="result-panel">
+          <div class="result-top"><div><span class="result-kicker">YOUR DELIVERY ESTIMATE</span><span class="live-chip"><i></i> MODEL OUTPUT</span></div><span class="form-number light">02</span></div>
+          <div id="result-empty" class="result-empty"><div class="clock-illustration"><div class="clock-hand"></div><span></span></div><h3>Your ETA will appear here</h3><p>Adjust the delivery conditions, then calculate an estimate.</p></div>
+          <div id="result-value" class="result-value hidden"><div class="duration"><strong id="minutes">—</strong><span>MIN</span></div><div class="result-separator"></div><div class="arrival-row"><span class="arrival-icon">↗</span><div><small>ESTIMATED ARRIVAL</small><strong id="arrival">—</strong></div><span class="arrival-date" id="arrival-date"></span></div><p class="result-disclaimer">A model estimate based on the conditions entered. Actual delivery times can vary.</p></div>
+          <div class="result-footer"><span>BUILT FOR DISPATCH</span><span>LAST-MILE ETA <b>·</b> ML</span></div>
+        </aside>
+      </div>
+    </section>
+
+    <section class="model-section" id="model">
+      <div class="model-copy"><div class="eyebrow dark"><span class="eyebrow-line"></span> MODEL STATUS</div><h2>Bring your<br><em>delivery data.</em></h2><p>Upload the course CSV to compare models, train the final pipeline, and unlock real held-out results.</p><div class="model-status-row"><span class="model-status-dot"></span><div><strong id="model-status-title">Synthetic preview active</strong><span id="model-status-detail">Real dataset metrics are not loaded</span></div></div></div>
+      <div class="upload-panel"><div class="upload-heading"><span class="upload-icon">↑</span><div><h3>Train on your dataset</h3><p>Amazon delivery dataset · CSV format</p></div></div>
+        <label class="dropzone" id="dropzone"><input id="dataset-file" type="file" accept=".csv,text/csv"><span class="upload-cloud">↑</span><strong>Choose a CSV file</strong><small>or drag and drop it here</small><span class="file-size">Maximum file size: 120 MB</span></label>
+        <div id="selected-file" class="selected-file hidden"><span class="file-badge">CSV</span><span id="file-name">dataset.csv</span><button id="clear-file" type="button">×</button></div>
+        <button id="train-button" class="secondary-button" type="button" disabled>Train and evaluate <span>↗</span></button>
+        <a id="download-package" class="package-button hidden" href="/api/model-package"><span><b>↓</b> Download trained model package</span><small>.ZIP</small></a>
+        <div id="train-progress" class="train-progress hidden"><div class="progress-track"><span></span></div><small>Comparing Ridge, Random Forest and Extra Trees…</small></div>
+        <div id="train-error" class="form-error hidden" role="alert"></div>
+        <p class="privacy-note">CSV is used to train this model and is not displayed in the app.</p>
+      </div>
+    </section>
+
+    <section class="metrics-section hidden" id="metrics-section"><div class="metrics-heading"><div><div class="eyebrow dark"><span class="eyebrow-line"></span> HELD-OUT EVALUATION</div><h2>Model comparison</h2></div><span id="metrics-rows" class="metrics-count">—</span></div><div class="metrics-table-wrap"><table><thead><tr><th>MODEL</th><th>CV MAE</th><th>TEST MAE</th><th>TEST RMSE</th><th>MAPE</th><th>R²</th></tr></thead><tbody id="metrics-body"></tbody></table></div><p class="metrics-footnote" id="metrics-note"></p></section>
+
+    <section class="how-section" id="how-it-works"><div class="how-intro"><div class="eyebrow dark"><span class="eyebrow-line"></span> THE APPROACH</div><h2>From coordinates<br>to a customer ETA.</h2><p>A compact regression workflow that compares a baseline with tree-based models.</p></div><div class="how-steps"><article><span>01</span><h3>Build route signals</h3><p>Pickup and drop coordinates become a Haversine route distance.</p></article><article><span>02</span><h3>Learn conditions</h3><p>Traffic, weather, area, vehicle and delivery context are encoded by a fitted pipeline.</p></article><article><span>03</span><h3>Compare honestly</h3><p>Three-fold CV supports model selection; a held-out split reports MAE, RMSE, MAPE and R².</p></article></div></section>
+  </main>
+  <footer><a class="brand footer-brand" href="/"><span class="brand-mark">r</span><span>routewise<span class="brand-dot">.</span></span></a><span>Last-mile delivery ETA prediction · Project prototype</span><a href="https://www.kaggle.com/datasets/sujalsuthar/amazon-delivery-dataset" target="_blank" rel="noreferrer">Dataset source ↗</a></footer>
+  <script src="/static/app.js"></script>
+</body>
+</html>
