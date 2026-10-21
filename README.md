@@ -14,7 +14,7 @@ python app.py
 
 Open <http://127.0.0.1:5000>. Upload the Kaggle CSV in the Model section to train three candidates, run three-fold cross-validation on the training partition, and compare held-out results. Training saves the fitted preprocessing-plus-estimator pipeline as `models/eta_model.joblib` and creates `deliverables/eta_model_package.zip` with the model, metrics, feature schema, runtime versions, checksum, and pinned dependencies. The original CSV is not included.
 
-The package becomes downloadable in the interface after real-data training. You can also rebuild it with `python model_package.py`. The checked-in `deliverables/eta_model_package.zip` contains the fitted real-data pipeline, metrics, manifest, and pinned model dependencies. The server loads `models/eta_model.joblib` when present, or the package ZIP otherwise. The Python and scikit-learn versions are pinned to match the artifact.
+The package becomes downloadable in the interface after real-data training. You can also rebuild it with `python model_package.py`. The checked-in `deliverables/eta_model_package.zip` contains the fitted real-data pipeline, metrics, manifest, and pinned model dependencies. The server loads `models/eta_model.joblib` when present, or the package ZIP otherwise. Vercel is pinned to its supported Python 3.12 line; package dependencies remain version-pinned to the trained artifact.
 
 ## Deploy the web app on Render
 
